@@ -2,7 +2,6 @@ import os
 import re
 import pandas as pd
 
-# Nombre del archivo CSV descargado de Apify
 RAW_CSV_PATH = "dataset_idealista.csv"
 OUTPUT_PATH = os.path.join("data", "zonas_cv.csv")
 
@@ -19,7 +18,7 @@ def obtener_archivo_csv():
     return None
 
 def procesar_csv_apify(input_file=None):
-    """Limpia el CSV de Idealista, descarta precios trampa y genera data/zonas_cv.csv."""
+    """Limpia el CSV de Idealista, descarta precios trampa de 1€ y genera data/zonas_cv.csv."""
     archivo_a_procesar = obtener_archivo_csv() if not input_file else input_file
     
     if not archivo_a_procesar or not os.path.exists(archivo_a_procesar):
@@ -29,7 +28,7 @@ def procesar_csv_apify(input_file=None):
     print(f"📖 Leyendo datos extraídos de Apify desde {archivo_a_procesar}...")
     df = pd.read_csv(archivo_a_procesar, low_memory=False)
 
-    # 1. Columna de Precio (priorizando campos estandarizados de Apify)
+    # 1. Columna de Precio
     col_precio = None
     candidatos_precio = ['priceInfo/amount', 'priceInfo/price', 'price', 'priceInfo/price/amount', 'propertyPrice']
     for cand in candidatos_precio:
@@ -44,7 +43,7 @@ def procesar_csv_apify(input_file=None):
     col_lat = next((c for c in df.columns if 'latitude' in c.lower() or c == 'lat'), None)
     col_lon = next((c for c in df.columns if 'longitude' in c.lower() or 'lng' in c.lower() or c == 'lon'), None)
 
-    # 3. Zona / Ubicación (municipio o barrio)
+    # 3. Zona / Ubicación
     col_zona = None
     candidatos_zona = ['location/municipality', 'municipality', 'location/neighborhood', 'neighborhood', 'address', 'title']
     for cand in candidatos_zona:
@@ -55,22 +54,15 @@ def procesar_csv_apify(input_file=None):
     if not col_zona:
         col_zona = next((c for c in df.columns if 'municipality' in c.lower() or 'neighborhood' in c.lower() or 'address' in c.lower()), df.columns[0])
 
-    print(f"🔍 Columnas detectadas:")
-    print(f" - Precio: {col_precio}")
-    print(f" - Latitud: {col_lat}")
-    print(f" - Longitud: {col_lon}")
-    print(f" - Zona/Ubicación: {col_zona}")
-
     df_clean = df.dropna(subset=[col_precio, col_lat, col_lon, col_zona]).copy()
     df_clean[col_precio] = pd.to_numeric(df_clean[col_precio], errors='coerce')
 
-    # ELIMINAR PRECIOS TRAMPA / FALSOS DE 1€ O MENORES A 150€
+    # ELIMINAR PRECIOS TRAMPA / FALSOS MENORES A 150€ (Elimina los de 1€)
     df_clean = df_clean[df_clean[col_precio] >= 150].copy()
 
-    # Función para limpiar el nombre de la zona (eliminar prefijos como "Detached house in", "Flat in", etc.)
+    # Limpiar prefijos de zona en inglés/español
     def limpiar_nombre_zona(texto):
         texto = str(texto)
-        # Quitar tipos de propiedad en inglés/español al inicio del texto
         texto = re.sub(r'^(Flat in|Apartment in|Detached house in|House in|Studio in|Duplex in|Penthouse in|Room in|Piso en|Casa en|Habitación en)\s+', '', texto, flags=re.IGNORECASE)
         return texto.strip()
 
@@ -87,9 +79,7 @@ def procesar_csv_apify(input_file=None):
         lon=(col_lon, 'mean')
     ).reset_index()
 
-    # Formatear al esquema de MatchMyZone
     resumen.rename(columns={col_zona: 'nombre'}, inplace=True)
-    
     resumen['tiempo_trayecto'] = 15
     resumen['renta_media_ine'] = "14.800 €/año"
     resumen['tags'] = "metro_directo,ambiente_joven,comercio_local"
