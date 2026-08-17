@@ -48,7 +48,7 @@ if st.sidebar.button("🔍 Buscar Zonas Compatibles", type="primary"):
 
     with st.spinner("Calculando Match Scores en vivo..."):
         try:
-            response = requests.post(API_URL, json=payload, timeout=10)
+            response = requests.post(API_URL, json=payload, timeout=30)
             if response.status_code == 200:
                 data = response.json()
                 st.success(f"¡Hola {data['usuario']}! Hemos encontrado {data['total_matches_viables']} zonas compatibles para ti.")
