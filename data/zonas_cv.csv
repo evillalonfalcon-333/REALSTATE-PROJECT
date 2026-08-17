@@ -1,0 +1,9 @@
+nombre,precio_habitacion,precio_piso,tiempo_trayecto,renta_media_ine,tags,lat,lon
+Benimaclet (Valencia),450.0,1100.0,10,15200 €/año,"metro_directo,gimnasio,ambiente_joven,comercio_local",39.4854,-0.3582
+Blasco Ibáñez / Mestalla (Valencia),480.0,1200.0,12,16800 €/año,"metro_directo,gimnasio,ambiente_joven,comercio_local,zonas_verdes",39.4751,-0.3541
+Burjassot (Universitat),410.0,890.0,18,14100 €/año,"metro_directo,gimnasio,ambiente_joven,comercio_local",39.5083,-0.4111
+Mislata,420.0,920.0,15,14800 €/año,"metro_directo,comercio_local,zonas_verdes",39.4750,-0.4167
+Torrent (Metro),380.0,800.0,22,13500 €/año,"metro_directo,gimnasio,ambiente_joven,comercio_local,zonas_verdes",39.4372,-0.4653
+Paterna (Centro),400.0,850.0,25,13500 €/año,"metro_directo,gimnasio,comercio_local,zonas_verdes",39.5033,-0.4417
+El Cabañal / Malvarrosa (Valencia),490.0,1250.0,20,13900 €/año,"playa,ambiente_joven,comercio_local,zonas_verdes",39.4686,-0.3275
+Sagunto / Puerto,330.0,700.0,38,13500 €/año,"playa,comercio_local,zonas_verdes",39.6796,-0.2081
